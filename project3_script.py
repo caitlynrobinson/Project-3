@@ -12,52 +12,52 @@ DESCRIPTION
 # Import packages
 import numpy as np 
 import matplotlib.pyplot as plt
-from project3_module import load_data, separate_datasets
+# from project3_module import load_data, separate_datasets
 
 #%% Part 1: Collect & Load Data
 
 # Load the data from the Arduino program
-input_files = ['/Users/caitlynrobinson/Desktop/rest.txt', '/Users/caitlynrobinson/Desktop/relax.txt', '/Users/caitlynrobinson/Desktop/mentalstress.txt', '/Users/caitlynrobinson/Desktop/wallsit.txt']
-contents = load_data(input_files)
+rest_file = '/Users/caitlynrobinson/Desktop/rest.txt'
+relax_file = '/Users/caitlynrobinson/Desktop/relax.txt'
+mental_stress_file = '/Users/caitlynrobinson/Desktop/mentally_stressful.txt'
+wall_sit_file = '/Users/caitlynrobinson/Desktop/wallsit.txt'
+rest = np.loadtxt(rest_file)
+relax = np.loadtxt(relax_file)
+mental_stress = np.loadtxt(mental_stress_file)
+wall_sit = np.loadtxt(wall_sit_file)
 
-# Separate each row in contents to have each dataset as individual variables
-datasets = separate_datasets(contents)
-rest, relax, mental_stress, wall_sit = datasets
+# Make a time array so the data can be graphed in a 5 second interval
+fs = 500 #Hz
+duration = fs * 300
+dt = 1/fs
+rest_time = len(rest)/fs
+#rest_time = np.linspace(0, rest_time, len(rest), endpoint=False)
+rest_time = np.arange(0, len(rest)/fs, dt)
 
-# Make each list into an array
-rest = np.array(rest)
-relax = np.array(relax)
-mental_stress = np.array(mental_stress)
-wall_sit = np.array(wall_sit)
+# Index to only get duration
+five_min_data = rest[:duration]
 
-# Convert from Arduino freqency to seconds for graphing
-
-# Need to come back and do this, was having issues with frequency conversion
-# fs = 16000000 #Hz
-
-# time = len(rest)/fs
-# rest_time = np.linspace(0, time, len(rest), endpoint=False)
-
-
-# #time_rest = np.arange(len(rest)) / fs
-# time_relax = np.arange(len(relax)) / fs
-# time_mental_stress = np.arange(len(mental_stress)) / fs
-# time_wall_sit = np.arange(len(wall_sit)) / fs
+relax_time = len(relax)/fs
+relax_time = np.linspace(0, relax_time, len(relax), endpoint=False)
+mental_stress_time = len(mental_stress)/fs
+mental_stress_time = np.arange(0, len(mental_stress)/fs, dt)
+wall_sit_time = len(wall_sit)/fs
+wall_sit_time = np.linspace(0, wall_sit_time, len(wall_sit), endpoint=False)
 
 # Plot concatenated data
-concatenated_datasets = np.concatenate([rest, relax, mental_stress, wall_sit])
-plt.figure(1, clear=True)
-plt.plot(concatenated_datasets) # time for this?
-plt.xlabel('Time (s)')
-plt.ylabel('Voltage (mV)')
-plt.title('Concatenated Activity Data')
-plt.grid(True)
-plt.show()
+# concatenated_datasets = np.concatenate([rest, relax, mental_stress, wall_sit])
+# plt.figure(1, clear=True)
+# #plt.plot(relax_time, concatenated_datasets) # using relaxed time for this time because it has the shortest length
+# plt.xlabel('Time (s)')
+# plt.ylabel('Voltage (mV)')
+# plt.title('Concatenated Activity Data')
+# plt.grid(True)
+# plt.show()
 
 # Plot rest data
 plt.figure(2, clear=True)
-plt.plot(rest)
-plt.xlim(1000, 1005) #only plot 5 sec of data
+plt.plot(rest_time, rest)
+plt.xlim(0,5)
 plt.xlabel('Time (s)')
 plt.ylabel('Voltage (mV)')
 plt.title('Rest Data')
@@ -66,8 +66,8 @@ plt.show()
 
 # Plot relax data
 plt.figure(3, clear=True)
-plt.plot(relax)
-plt.xlim(1000, 1005) #only plot 5 sec of data
+plt.plot(relax_time, relax)
+#plt.xlim(0.5, 5.5) #only plot 5 sec of data
 plt.xlabel('Time (s)')
 plt.ylabel('Voltage (mV)')
 plt.title('Relaxed Data')
@@ -76,23 +76,23 @@ plt.show()
 
 # Plot mental stress data
 plt.figure(4, clear=True)
-plt.plot(mental_stress)
-plt.xlim(1000, 1005) #only plot 5 sec of data
+plt.plot(mental_stress_time, mental_stress)
+plt.xlim(0, 5) #only plot 5 sec of data
 plt.xlabel('Time (s)')
 plt.ylabel('Voltage (mV)')
 plt.title('Mental Stress Data')
 plt.grid(True)
 plt.show()
 
-# Plot wall sit data
-plt.figure(5, clear=True)
-plt.plot(wall_sit)
-plt.xlim(1000, 1005) #only plot 5 sec of data
-plt.xlabel('Time (s)')
-plt.ylabel('Voltage (mV)')
-plt.title('Wall Sit Data')
-plt.grid(True)
-plt.show()
+# # Plot wall sit data
+# plt.figure(5, clear=True)
+# plt.plot(wall_sit_time, wall_sit)
+# plt.xlim(0.5, 5.5) #only plot 5 sec of data
+# plt.xlabel('Time (s)')
+# plt.ylabel('Voltage (mV)')
+# plt.title('Wall Sit Data')
+# plt.grid(True)
+# plt.show()
 
 #%% Part 2: Filter Your Data
 
@@ -141,29 +141,6 @@ plt.show()
 # Calculate LF/HF ratio in each activity
 
 # Plot these ratios as a bar plot
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

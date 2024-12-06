@@ -20,29 +20,30 @@ import matplotlib.pyplot as plt
 rest_file = '/Users/caitlynrobinson/Desktop/rest.txt'
 relax_file = '/Users/caitlynrobinson/Desktop/relax.txt'
 mental_stress_file = '/Users/caitlynrobinson/Desktop/mentally_stressful.txt'
-wall_sit_file = '/Users/caitlynrobinson/Desktop/wallsit.txt'
+physical_stress_file = '/Users/caitlynrobinson/Desktop/physical_stress.txt'
 rest = np.loadtxt(rest_file)
 relax = np.loadtxt(relax_file)
 mental_stress = np.loadtxt(mental_stress_file)
-wall_sit = np.loadtxt(wall_sit_file)
+physical_stress = np.loadtxt(physical_stress_file)
 
 # Make a time array so the data can be graphed in a 5 second interval
 fs = 500 #Hz
-duration = fs * 300
 dt = 1/fs
 rest_time = len(rest)/fs
-#rest_time = np.linspace(0, rest_time, len(rest), endpoint=False)
 rest_time = np.arange(0, len(rest)/fs, dt)
 
-# Index to only get duration
-five_min_data = rest[:duration]
-
 relax_time = len(relax)/fs
-relax_time = np.linspace(0, relax_time, len(relax), endpoint=False)
+relax_time = np.arange(0, len(relax)/fs, dt)
 mental_stress_time = len(mental_stress)/fs
 mental_stress_time = np.arange(0, len(mental_stress)/fs, dt)
-wall_sit_time = len(wall_sit)/fs
-wall_sit_time = np.linspace(0, wall_sit_time, len(wall_sit), endpoint=False)
+physical_stress_time = len(physical_stress)/fs
+physical_stress_time = np.arange(0, len(physical_stress)/fs, dt)
+
+# Index to only get duration for concatenation
+duration = fs * 300 #to cut all of the data down to 5 minutes
+# five_min_rest = rest[:duration]
+# five_min_relax = relax[:duration]
+# five_min
 
 # Plot concatenated data
 # concatenated_datasets = np.concatenate([rest, relax, mental_stress, wall_sit])
@@ -67,7 +68,7 @@ plt.show()
 # Plot relax data
 plt.figure(3, clear=True)
 plt.plot(relax_time, relax)
-#plt.xlim(0.5, 5.5) #only plot 5 sec of data
+plt.xlim(0,5)
 plt.xlabel('Time (s)')
 plt.ylabel('Voltage (mV)')
 plt.title('Relaxed Data')
@@ -77,22 +78,22 @@ plt.show()
 # Plot mental stress data
 plt.figure(4, clear=True)
 plt.plot(mental_stress_time, mental_stress)
-plt.xlim(0, 5) #only plot 5 sec of data
+plt.xlim(0,5)
 plt.xlabel('Time (s)')
 plt.ylabel('Voltage (mV)')
 plt.title('Mental Stress Data')
 plt.grid(True)
 plt.show()
 
-# # Plot wall sit data
-# plt.figure(5, clear=True)
-# plt.plot(wall_sit_time, wall_sit)
-# plt.xlim(0.5, 5.5) #only plot 5 sec of data
-# plt.xlabel('Time (s)')
-# plt.ylabel('Voltage (mV)')
-# plt.title('Wall Sit Data')
-# plt.grid(True)
-# plt.show()
+# Plot physical stress data
+plt.figure(5, clear=True)
+plt.plot(physical_stress_time, physical_stress)
+plt.xlim(100,105)
+plt.xlabel('Time (s)')
+plt.ylabel('Voltage (mV)')
+plt.title('Physical Stress Data')
+plt.grid(True)
+plt.show()
 
 #%% Part 2: Filter Your Data
 
@@ -141,13 +142,6 @@ plt.show()
 # Calculate LF/HF ratio in each activity
 
 # Plot these ratios as a bar plot
-
-
-
-
-
-
-
 
 
 

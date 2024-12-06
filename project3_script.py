@@ -96,7 +96,7 @@ plt.grid(True)
 plt.show()
 
 #%% Part 2: Filter Your Data
-
+ecg_data = [rest, relax, mental_stress, physical_stress, concatenated_datasets]
 
 # Compare one with before filter on same plot
 # Plot rest data with filter

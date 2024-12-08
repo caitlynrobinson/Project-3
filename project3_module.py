@@ -12,6 +12,7 @@ DESCRIPTION
 # Import packages
 import numpy as np 
 import matplotlib.pyplot as plt
+
 #%% Part 1: Collect & Load Data
 def plot_raw_data(rest_time, rest, relax_time, relax, mental_stress_time, mental_stress, physical_stress_time, physical_stress):
     """

@@ -73,21 +73,21 @@ plt.show()
 plot_raw_data(rest_time, rest, xlim_rest, relax_time, relax, xlim_relax, mental_stress_time, mental_stress, xlim_mental_stress, physical_stress_time, physical_stress, xlim_physical_stress)
 
 #%% Part 2: Filter Your Data
-ecg_data = [rest, relax, mental_stress, physical_stress, concatenated_datasets]
+# Assign variables for cutoffs
+low_cutoff = 0
+high_cutoff = 40
 
-# Compare one with before filter on same plot
-# Plot rest data with filter
+# Call the function to apply bandpass filter to datasets
+filtered_rest, filtered_relax, filtered_mental, filtered_physical = bandpass_filter(fs, rest, relax, mental_stress, physical_stress, low_cutoff, high_cutoff)
 
-# Plot relaxed data with filter
-
-# Plot mental stress data with filter
-
-# Plot wall sit data with filter
+# Plot data with filter and compare one activity with raw data
+plot_filtered_signals(filtered_rest, filtered_relax, filtered_mental, filtered_physical, relax)
 
 # Plot filter's impulse response
 
 # Plot filter's frequency response
 
+# ecg_data = [rest, relax, mental_stress, physical_stress, concatenated_datasets]
 
 #%% Part 3: Detect Heartbeats
 

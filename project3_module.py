@@ -14,28 +14,44 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #%% Part 1: Collect & Load Data
-def plot_raw_data(rest_time, rest, relax_time, relax, mental_stress_time, mental_stress, physical_stress_time, physical_stress):
+def plot_raw_data(rest_time, rest, xlim_low_rest, xlim_high_rest, relax_time, relax, xlim_low_relax, xlim_high_relax, mental_stress_time, mental_stress, xlim_low_mental_stress, xlim_high_mental_stress, physical_stress_time, physical_stress, xlim_low_physical_stress, xlim_high_physical_stress):
     """
     This function plots the raw data of each of the 4 collected activities. 
 
     Parameters
     ----------
     rest_time : array of float (148815,)
-        the time in seconds corresponding to each collected rest datapoint.
+       the time in seconds corresponding to each collected rest datapoint.
     rest : array of float (148815,)
         collected rest ECG data from Arduino.
+    xlim_low_rest : int
+        the lower x-limit for rest data plot, chosen from analyzing the raw plot.
+    xlim_high_rest : int
+        the upper x-limit for the rest data plot, chosen from analyzing the raw plot.
     relax_time : array of float (152552,)
         the time in seconds corresponding to each collected relax datapoint.
     relax : array of float (152552,)
         collected relax ECG data from Arduino.
+    xlim_low_relax : int
+        the lower x-limit for relax data plot, chosen from analyzing the raw plot.
+    xlim_high_relax : int
+        the upper x-limit for the relax data plot, chosen from analyzing the raw plot.
     mental_stress_time : array of float (113492,)
         the time in seconds corresponding to each collected mental stress datapoint.
     mental_stress : array of float (113492,)
         collected mental stress ECG data from Arduino.
+    xlim_low_mental_stress : int
+        the lower x-limit for mental stress data plot, chosen from analyzing the raw plot.
+    xlim_high_mental_stress : int
+        the upper x-limit for the mental stress data plot, chosen from analyzing the raw plot.
     physical_stress_time : array of float (153721,)
         the time in seconds corresponding to each collected physical stress datapoint.
     physical_stress : array of float (153721,)
         collected physical stress ECG data from Arduino.
+    xlim_low_physical_stress : int
+        the lower x-limit for physical stress data plot, chosen from analyzing the raw plot.
+    xlim_high_physical_stress : int
+        the upper x-limit for the physical stress data plot, chosen from analyzing the raw plot.
 
     Returns
     -------
@@ -47,28 +63,28 @@ def plot_raw_data(rest_time, rest, relax_time, relax, mental_stress_time, mental
     axes[0, 0].set_title('Rest')
     axes[0, 0].set_xlabel('Time (s)')
     axes[0, 0].set_ylabel('Voltage (mV)')
-    axes[0, 0].set_xlim(10, 15)
+    axes[0, 0].set_xlim(xlim_low_rest, xlim_high_rest)
     axes[0, 0].grid(True)
     
     axes[0,1].plot(relax_time, relax, color='red') #assign relaxed subplot
     axes[0, 1].set_title('Relaxed')
     axes[0, 1].set_xlabel('Time (s)')
     axes[0, 1].set_ylabel('Voltage (mV)')
-    axes[0, 1].set_xlim(20, 25)
+    axes[0, 1].set_xlim(xlim_low_relax, xlim_high_relax)
     axes[0, 1].grid(True)
     
     axes[1,0].plot(mental_stress_time, mental_stress, color='orange') #assign third subplot
     axes[1, 0].set_title('Mental Stress')
     axes[1, 0].set_xlabel('Time (s)')
     axes[1, 0].set_ylabel('Voltage (mV)')
-    axes[1, 0].set_xlim(0, 5)
+    axes[1, 0].set_xlim(xlim_low_mental_stress, xlim_high_mental_stress)
     axes[1, 0].grid(True)
     
     axes[1,1].plot(physical_stress_time, physical_stress, color='green') #assign fourth subplot
     axes[1, 1].set_title('Physical Stress')
     axes[1, 1].set_xlabel('Time (s)')
     axes[1, 1].set_ylabel('Voltage (mV)')
-    axes[1, 1].set_xlim(40, 45)
+    axes[1, 1].set_xlim(xlim_low_physical_stress, xlim_high_physical_stress)
     axes[1, 1].grid(True)
     
     fig.suptitle('Raw Data Plots') #annotate full figure

@@ -39,6 +39,16 @@ mental_stress_time = np.arange(0, len(mental_stress)/fs, dt)
 physical_stress_time = len(physical_stress)/fs
 physical_stress_time = np.arange(0, len(physical_stress)/fs, dt)
 
+# By zooming in/analyzing raw activity plots, x-limits were chosen for each individual subplot to show beats. This allows for more flexibility in the code
+xlim_low_rest = 10
+xlim_high_rest = 15
+xlim_low_relax = 20
+xlim_high_relax = 25
+xlim_low_mental_stress = 0
+xlim_high_mental_stress = 5
+xlim_low_physical_stress = 40
+xlim_high_physical_stress = 45
+
 # Index each dataset to only get 5 minutes of data for concatenation
 duration = fs * 300 #to cut all of the data down to 5 minutes
 five_min_rest = rest[:duration]
@@ -64,7 +74,7 @@ plt.grid(True)
 plt.show()
 
 # Call function from module to plot raw data
-plot_raw_data(rest_time, rest, relax_time, relax, mental_stress_time, mental_stress, physical_stress_time, physical_stress)
+plot_raw_data(rest_time, rest, xlim_low_rest, xlim_high_rest, relax_time, relax, xlim_low_relax, xlim_high_relax, mental_stress_time, mental_stress, xlim_low_mental_stress, xlim_high_mental_stress, physical_stress_time, physical_stress, xlim_low_physical_stress, xlim_high_physical_stress)
 
 #%% Part 2: Filter Your Data
 ecg_data = [rest, relax, mental_stress, physical_stress, concatenated_datasets]

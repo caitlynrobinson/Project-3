@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 
 #%% Part 1: Collect & Load Data
 
+
 # Load the data from the Arduino program
 rest_file = '/Users/caitlynrobinson/Desktop/rest.txt'
 relax_file = '/Users/caitlynrobinson/Desktop/relax.txt'
@@ -26,12 +27,11 @@ relax = np.loadtxt(relax_file)
 mental_stress = np.loadtxt(mental_stress_file)
 physical_stress = np.loadtxt(physical_stress_file)
 
-# Make a time array so the data can be graphed in a 5 second interval
+# Convert frequency data to seconds so it can be graphed in 5-second intervals
 fs = 500 #Hz
 dt = 1/fs
 rest_time = len(rest)/fs
 rest_time = np.arange(0, len(rest)/fs, dt)
-
 relax_time = len(relax)/fs
 relax_time = np.arange(0, len(relax)/fs, dt)
 mental_stress_time = len(mental_stress)/fs
@@ -39,61 +39,32 @@ mental_stress_time = np.arange(0, len(mental_stress)/fs, dt)
 physical_stress_time = len(physical_stress)/fs
 physical_stress_time = np.arange(0, len(physical_stress)/fs, dt)
 
-# Index to only get duration for concatenation
+# Index each dataset to only get 5 minutes of data for concatenation
 duration = fs * 300 #to cut all of the data down to 5 minutes
-# five_min_rest = rest[:duration]
-# five_min_relax = relax[:duration]
-# five_min
+five_min_rest = rest[:duration]
+five_min_relax = relax[:duration]
+five_min_mental_stress = mental_stress[:duration]
+five_min_physical_stress = physical_stress[:duration]
+
+# Index each time array so x and y have same dimensions for plotting
+five_min_rest_time = rest_time[:duration]
+five_min_relax_time = relax_time[:duration]
+five_min_mental_stress_time = mental_stress_time[:duration]
+five_min_physical_stress_time = physical_stress_time[:duration]
 
 # Plot concatenated data
-# concatenated_datasets = np.concatenate([rest, relax, mental_stress, wall_sit])
-# plt.figure(1, clear=True)
-# #plt.plot(relax_time, concatenated_datasets) # using relaxed time for this time because it has the shortest length
-# plt.xlabel('Time (s)')
-# plt.ylabel('Voltage (mV)')
-# plt.title('Concatenated Activity Data')
-# plt.grid(True)
-# plt.show()
-
-# Plot rest data
-plt.figure(2, clear=True)
-plt.plot(rest_time, rest)
-plt.xlim(0,5)
+concatenated_datasets = np.concatenate([five_min_rest, five_min_relax, five_min_mental_stress, five_min_physical_stress])
+concatenated_time = np.concatenate([five_min_rest_time, five_min_relax_time, five_min_mental_stress_time, five_min_physical_stress_time])
+plt.figure(1, clear=True)
+plt.plot(concatenated_time, concatenated_datasets)
 plt.xlabel('Time (s)')
 plt.ylabel('Voltage (mV)')
-plt.title('Rest Data')
+plt.title('Concatenated Activity Data')
 plt.grid(True)
 plt.show()
 
-# Plot relax data
-plt.figure(3, clear=True)
-plt.plot(relax_time, relax)
-plt.xlim(0,5)
-plt.xlabel('Time (s)')
-plt.ylabel('Voltage (mV)')
-plt.title('Relaxed Data')
-plt.grid(True)
-plt.show()
-
-# Plot mental stress data
-plt.figure(4, clear=True)
-plt.plot(mental_stress_time, mental_stress)
-plt.xlim(0,5)
-plt.xlabel('Time (s)')
-plt.ylabel('Voltage (mV)')
-plt.title('Mental Stress Data')
-plt.grid(True)
-plt.show()
-
-# Plot physical stress data
-plt.figure(5, clear=True)
-plt.plot(physical_stress_time, physical_stress)
-plt.xlim(100,105)
-plt.xlabel('Time (s)')
-plt.ylabel('Voltage (mV)')
-plt.title('Physical Stress Data')
-plt.grid(True)
-plt.show()
+# Call function from module to plot raw data
+plot_raw_data(rest_time, rest, relax_time, relax, mental_stress_time, mental_stress, physical_stress_time, physical_stress)
 
 #%% Part 2: Filter Your Data
 ecg_data = [rest, relax, mental_stress, physical_stress, concatenated_datasets]

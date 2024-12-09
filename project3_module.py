@@ -154,61 +154,6 @@ def bandpass_filter(fs, rest, relax, mental_stress, physical_stress, low_cutoff,
 
     return filtered_rest, filtered_relax, filtered_mental, filtered_physical
 
-def plot_filtered_signals(filtered_rest, filtered_relax, filtered_mental, filtered_physical, relax):
-    """
-    This function plots the filtered signals, along with plotting the raw relaxed signal over its filtered result.
-
-    Parameters
-    ----------
-    filtered_rest : array of float (SIZE)
-        resultant rest data after filtering with a bandpass filter.
-    filtered_relax : array of float (SIZE)
-        resultant relax data after filtering with a bandpass filter.
-    filtered_mental : array of float (SIZE)
-        resultant mental stress data after filtering with a bandpass filter.
-    filtered_physical : array of float (SIZE)
-        resultant physical stress data after filtering with a bandpass filter.
-    relax : array of float (152552,)
-        collected rest ECG data from Arduino.
-
-    Returns
-    -------
-    None.
-
-    """
-    fig, axs = plt.subplots(2, 2, figsize=(12, 10)) #create plot for subplots
-    
-    # Set up subplots for each dataset
-    axs[0, 0].plot(filtered_rest)
-    axs[0, 0].set_title('Filtered Rest')
-    axs[0, 0].set_xlabel('Time (s)')
-    axs[0, 0].set_ylabel('Voltage (mV)')
-    axs[0, 0].grid(True)
-
-    axs[0, 1].plot(filtered_relax, label='Filtered Relax', color='green')
-    axs[0, 1].plot(relax, label='Raw Relax', color='red', alpha=0.5)
-    axs[0, 1].set_title('Filtered and Raw Relax') #compare raw and filtered data for relax dataset
-    axs[0, 1].set_xlabel('Time (s)')
-    axs[0, 1].set_ylabel('Voltage (mV)')
-    axs[0, 1].legend() 
-    axs[0, 1].grid(True)
-
-    axs[1, 0].plot(filtered_mental)
-    axs[1, 0].set_title('Filtered Mental Stress')
-    axs[1, 0].set_xlabel('Time (s)')
-    axs[1, 0].set_ylabel('Voltage (mV)')
-    axs[1, 0].grid(True)
-
-    axs[1, 1].plot(filtered_physical)
-    axs[1, 1].set_title('Filtered Physical Stress')
-    axs[1, 1].set_xlabel('Time (s)')
-    axs[1, 1].set_ylabel('Voltage (mV)')
-    axs[1, 1].grid(True)
-
-    fig.suptitle('Filtered Data Plots') #annotate full figure
-    plt.tight_layout()
-    plt.show()
-
 # #  #
 #   for signal in ecg_data:
 #    freq_array = np.fft.rfftfreq(len(signal), 1/fs)

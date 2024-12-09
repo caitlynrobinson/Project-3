@@ -50,36 +50,46 @@ def plot_raw_data(rest_time, rest, xlim_rest, relax_time, relax, xlim_relax, men
     None.
 
     """
-    fig, axes = plt.subplots(2, 2, figsize=(10,6)) #set up full figure
-    axes[0,0].plot(rest_time, rest, color='blue') #assign rest subplot
-    axes[0, 0].set_title('Rest') #annotate subplot
-    axes[0, 0].set_xlabel('Time (s)')
-    axes[0, 0].set_ylabel('Voltage (mV)')
-    axes[0, 0].set_xlim(xlim_rest) #set x-limits for subplot
-    axes[0, 0].grid(True)
+     plt.figure(figsize=(10, 6)) #set up figure
     
-    axes[0,1].plot(relax_time, relax, color='red') #assign relaxed subplot
-    axes[0, 1].set_title('Relaxed') #annotate subplot
-    axes[0, 1].set_xlabel('Time (s)')
-    axes[0, 1].set_ylabel('Voltage (mV)')
-    axes[0, 1].set_xlim(xlim_relax) #set x-limits for subplot
-    axes[0, 1].grid(True)
-    
-    axes[1,0].plot(mental_stress_time, mental_stress, color='orange') #assign third subplot
-    axes[1, 0].set_title('Mental Stress') #annotate subplot
-    axes[1, 0].set_xlabel('Time (s)')
-    axes[1, 0].set_ylabel('Voltage (mV)')
-    axes[1, 0].set_xlim(xlim_mental_stress) #set x-limits for subplot
-    axes[1, 0].grid(True)
-    
-    axes[1,1].plot(physical_stress_time, physical_stress, color='green') #assign fourth subplot
-    axes[1, 1].set_title('Physical Stress') #annotate subplot
-    axes[1, 1].set_xlabel('Time (s)')
-    axes[1, 1].set_ylabel('Voltage (mV)')
-    axes[1, 1].set_xlim(xlim_physical_stress) #set x-limits for subplot
-    axes[1, 1].grid(True)
-    
-    fig.suptitle('Raw Data Plots') #annotate full figure
+    # Rest subplot
+    plt.subplot(2, 2, 1)
+    plt.plot(rest_time, rest, color='blue')
+    plt.title('Rest')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Voltage (mV)')
+    plt.xlim(xlim_rest) #set x-limits for the subplot
+    plt.grid(True)
+
+    # Relaxed subplot
+    plt.subplot(2, 2, 2)
+    plt.plot(relax_time, relax, color='red')
+    plt.title('Relaxed')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Voltage (mV)')
+    plt.xlim(xlim_relax) #set x-limits for the subplot
+    plt.grid(True)
+
+    # Mental Stress subplot
+    plt.subplot(2, 2, 3) 
+    plt.plot(mental_stress_time, mental_stress, color='orange')
+    plt.title('Mental Stress')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Voltage (mV)')
+    plt.xlim(xlim_mental_stress) #set x-limits for the subplot
+    plt.grid(True)
+
+    # Physical Stress subplot
+    plt.subplot(2, 2, 4)  # Position 4 in a 2x2 grid
+    plt.plot(physical_stress_time, physical_stress, color='green')
+    plt.title('Physical Stress')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Voltage (mV)')
+    plt.xlim(xlim_physical_stress) #set x-limits for the subplot
+    plt.grid(True)
+
+    # Annotate figure
+    plt.suptitle('Raw Data Plots')
     plt.tight_layout()
     plt.show()
     

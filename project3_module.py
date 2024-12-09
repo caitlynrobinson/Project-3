@@ -9,6 +9,7 @@ MODULE
 DESCRIPTION
 """
 
+
 #%% Part 1: Collect & Load Data
 # Import packages
 import numpy as np 
@@ -48,48 +49,38 @@ def plot_raw_data(rest_time, rest, xlim_rest, relax_time, relax, xlim_relax, men
     Returns
     -------
     None.
-
     """
-     plt.figure(figsize=(10, 6)) #set up figure
+
+    fig, axes = plt.subplots(2, 2, figsize=(10,6)) #set up full figure
+    axes[0,0].plot(rest_time, rest, color='blue') #assign rest subplot
+    axes[0, 0].set_title('Rest') #annotate subplot
+    axes[0, 0].set_xlabel('Time (s)')
+    axes[0, 0].set_ylabel('Voltage (mV)')
+    axes[0, 0].set_xlim(xlim_rest) #set x-limits for subplot
+    axes[0, 0].grid(True)
     
-    # Rest subplot
-    plt.subplot(2, 2, 1)
-    plt.plot(rest_time, rest, color='blue')
-    plt.title('Rest')
-    plt.xlabel('Time (s)')
-    plt.ylabel('Voltage (mV)')
-    plt.xlim(xlim_rest) #set x-limits for the subplot
-    plt.grid(True)
-
-    # Relaxed subplot
-    plt.subplot(2, 2, 2)
-    plt.plot(relax_time, relax, color='red')
-    plt.title('Relaxed')
-    plt.xlabel('Time (s)')
-    plt.ylabel('Voltage (mV)')
-    plt.xlim(xlim_relax) #set x-limits for the subplot
-    plt.grid(True)
-
-    # Mental Stress subplot
-    plt.subplot(2, 2, 3) 
-    plt.plot(mental_stress_time, mental_stress, color='orange')
-    plt.title('Mental Stress')
-    plt.xlabel('Time (s)')
-    plt.ylabel('Voltage (mV)')
-    plt.xlim(xlim_mental_stress) #set x-limits for the subplot
-    plt.grid(True)
-
-    # Physical Stress subplot
-    plt.subplot(2, 2, 4)  # Position 4 in a 2x2 grid
-    plt.plot(physical_stress_time, physical_stress, color='green')
-    plt.title('Physical Stress')
-    plt.xlabel('Time (s)')
-    plt.ylabel('Voltage (mV)')
-    plt.xlim(xlim_physical_stress) #set x-limits for the subplot
-    plt.grid(True)
-
-    # Annotate figure
-    plt.suptitle('Raw Data Plots')
+    axes[0,1].plot(relax_time, relax, color='red') #assign relaxed subplot
+    axes[0, 1].set_title('Relaxed') #annotate subplot
+    axes[0, 1].set_xlabel('Time (s)')
+    axes[0, 1].set_ylabel('Voltage (mV)')
+    axes[0, 1].set_xlim(xlim_relax) #set x-limits for subplot
+    axes[0, 1].grid(True)
+    
+    axes[1,0].plot(mental_stress_time, mental_stress, color='orange') #assign third subplot
+    axes[1, 0].set_title('Mental Stress') #annotate subplot
+    axes[1, 0].set_xlabel('Time (s)')
+    axes[1, 0].set_ylabel('Voltage (mV)')
+    axes[1, 0].set_xlim(xlim_mental_stress) #set x-limits for subplot
+    axes[1, 0].grid(True)
+    
+    axes[1,1].plot(physical_stress_time, physical_stress, color='green') #assign fourth subplot
+    axes[1, 1].set_title('Physical Stress') #annotate subplot
+    axes[1, 1].set_xlabel('Time (s)')
+    axes[1, 1].set_ylabel('Voltage (mV)')
+    axes[1, 1].set_xlim(xlim_physical_stress) #set x-limits for subplot
+    axes[1, 1].grid(True)
+    
+    fig.suptitle('Raw Data Plots') #annotate full figure
     plt.tight_layout()
     plt.show()
     
@@ -115,13 +106,22 @@ def apply_filter(signal, fs, low_cutoff, high_cutoff):
         the filtered signal after applying the Fast Fourier Transform.
 
     """
+    # define low and high cutoff frequencies
+    low_cutoff = 5 # Hz
+    high_cutoff = 70 # Hz
+    
+    # find signal filter and frequency response
     freq_array = np.fft.rfftfreq(len(signal), 1/fs) #create frequency arrays
     bandpass_mask = (freq_array >= low_cutoff) & (freq_array <= high_cutoff) #create a bandpass mask using the high and low cutoff frequencies provided in the script
     fft_signal = np.fft.rfft(signal) #apply the FFT to the signal
     filtered_fft = fft_signal * bandpass_mask #apply the mask to the FFT
     filtered_signal = np.fft.irfft(filtered_fft) #inverse FFT
     
-    return filtered_signal
+    # find impulse response
+    impulse_response = np.fft.irfft(bandpass_mask) # find impulse response from frequency response
+    impulse_response = np.fft.fftshift(impulse_response) #flip first and second half of impulse response
+    
+    return filtered_signal, bandpass_mask, impulse_response, freq_array
 
 def bandpass_filter(fs, rest, relax, mental_stress, physical_stress, low_cutoff, high_cutoff):
     """
@@ -157,57 +157,28 @@ def bandpass_filter(fs, rest, relax, mental_stress, physical_stress, low_cutoff,
 
     """
     # Apply the filter to each dataset
-    filtered_rest = apply_filter(rest, fs, low_cutoff, high_cutoff)
-    filtered_relax = apply_filter(relax, fs, low_cutoff, high_cutoff)
-    filtered_mental = apply_filter(mental_stress, fs, low_cutoff, high_cutoff)
-    filtered_physical = apply_filter(physical_stress, fs, low_cutoff, high_cutoff)
+    filtered_rest, freq_response, impulse_response, x_axis = apply_filter(rest, fs, low_cutoff, high_cutoff)
+    filtered_relax, freq_response, impulse_response, x_axis = apply_filter(relax, fs, low_cutoff, high_cutoff)
+    filtered_mental, freq_response, impulse_response, x_axis = apply_filter(mental_stress, fs, low_cutoff, high_cutoff)
+    filtered_physical, freq_response, impulse_response, x_axis = apply_filter(physical_stress, fs, low_cutoff, high_cutoff)
 
-    return filtered_rest, filtered_relax, filtered_mental, filtered_physical
-
-# #  #
-#   for signal in ecg_data:
-#    freq_array = np.fft.rfftfreq(len(signal), 1/fs)
-
-# #  #
-#   low_cutoff =
-#   high_cutoff = 
-#   filter = np.ones(len(freq_array))
-#   filter[(f<=low_cutoff) & (f>=high_cutoff)] = 0
-
-# # # 
-#  ecg_fft = np.fft.fft(ecg_data)
-#  filtered_freq = filter * ecg_fft
-#  filtered_time = np.fft.irfft(filtered_freq)
-
-#  return filtered_freq, filtered_time
+    return filtered_rest, filtered_relax, filtered_mental, filtered_physical, freq_response, impulse_response, x_axis
  
+    
 #%% Part 3: Detect Heartbeats
-def normalize_template (trial_mean):
-    demeaned_signal = trial_mean - np.mean(trial_mean)
-    energy = np.square(demeaned_signal)
-    energy = np.sum(energy)
-    template = demeaned_signal / energy
+def load_file (input_file):
+    data = np.loadtxt(input_file)
+    time = np.arange(0, len(data)/500, 1/500)
+    voltage = data
+    boolean_mask = (time > 10.55) & (time < 11.1)
+    template = voltage[boolean_mask]
     return template
 
-def get_template_match (signal_voltage, template):
-    flipped_template = np.flip(template)
-    template_match = np.convolve(signal_voltage, flipped_template)
-    return template_match
-
-def predict_beat_times (template_match, threshold = ):
-    above_threshold = template_match > threshold
-    before_threshold = template_match[:-1] < threshold
-    before_threshold = np.concatenate(([False], before_threshold))
-    mask = above_threshold & before_threshold
-    beat_samples = np.where(mask)[0] + 1
-    return beat_samples
-    
-def detect_beats (trial_mean, signal_voltage, threshold):
-    template = normalize_template(trial mean)
-    template_match = get_template_match (signal_voltage, template)
-    beat_samples = predict_beat_times(template_match, threshold)
-    return beat_samples, template match
-
 #%% Part 4: Calculate Heart Rate Variability
+def calculate_hrv (ibi_data_series):
+    rr_deviations = ibi_data_series - np.mean(ibi_data_series)
+    rr_variance = np.mean(rr_deviations ** 2)
+    hrv = np.sqrt(rr_variance)
+    return hrv
 
 #%% Part 5: Get HRV Frequency Band Power

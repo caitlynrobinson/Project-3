@@ -96,7 +96,7 @@ plot_filtered_signals(filtered_rest, filtered_relax, filtered_mental, filtered_p
 # apply to all datasets
 
 # Plot data with heartbeat times
-
+plt.plot
 
 #%% Part 4: Calculate Heart Rate Variability (HRV)
 

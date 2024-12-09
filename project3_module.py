@@ -227,6 +227,31 @@ def plot_filtered_signals(filtered_rest, filtered_relax, filtered_mental, filter
 #  return filtered_freq, filtered_time
  
 #%% Part 3: Detect Heartbeats
+def normalize_template (trial_mean):
+    demeaned_signal = trial_mean - np.mean(trial_mean)
+    energy = np.square(demeaned_signal)
+    energy = np.sum(energy)
+    template = demeaned_signal / energy
+    return template
+
+def get_template_match (signal_voltage, template):
+    flipped_template = np.flip(template)
+    template_match = np.convolve(signal_voltage, flipped_template)
+    return template_match
+
+def predict_beat_times (template_match, threshold = ):
+    above_threshold = template_match > threshold
+    before_threshold = template_match[:-1] < threshold
+    before_threshold = np.concatenate(([False], before_threshold))
+    mask = above_threshold & before_threshold
+    beat_samples = np.where(mask)[0] + 1
+    return beat_samples
+    
+def detect_beats (trial_mean, signal_voltage, threshold):
+    template = normalize_template(trial mean)
+    template_match = get_template_match (signal_voltage, template)
+    beat_samples = predict_beat_times(template_match, threshold)
+    return beat_samples, template match
 
 #%% Part 4: Calculate Heart Rate Variability
 

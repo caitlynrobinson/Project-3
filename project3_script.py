@@ -81,7 +81,44 @@ high_cutoff = 40
 filtered_rest, filtered_relax, filtered_mental, filtered_physical = bandpass_filter(fs, rest, relax, mental_stress, physical_stress, low_cutoff, high_cutoff)
 
 # Plot data with filter and compare one activity with raw data
-plot_filtered_signals(filtered_rest, filtered_relax, filtered_mental, filtered_physical, relax)
+plt.figure(figsize=(12, 10))
+
+# Subplot 1: Filtered Rest
+plt.subplot(2, 2, 1)
+plt.plot(filtered_rest)
+plt.title('Filtered Rest')
+plt.xlabel('Time (s)')
+plt.ylabel('Voltage (mV)')
+plt.grid(True)
+
+# Subplot 2: Filtered and Raw Relax
+plt.subplot(2, 2, 2)
+plt.plot(filtered_relax, label='Filtered Relax', color='green')
+plt.plot(relax, label='Raw Relax', color='red', alpha=0.5)
+plt.title('Filtered and Raw Relax')  #compare raw and filtered data for relax dataset
+plt.xlabel('Time (s)')
+plt.ylabel('Voltage (mV)')
+plt.legend()
+plt.grid(True)
+
+# Subplot 3: Filtered Mental Stress
+plt.subplot(2, 2, 3)
+plt.plot(filtered_mental)
+plt.title('Filtered Mental Stress')
+plt.xlabel('Time (s)')
+plt.ylabel('Voltage (mV)')
+plt.grid(True)
+
+# Subplot 4: Filtered Physical Stress
+plt.subplot(2, 2, 4)
+plt.plot(filtered_physical)
+plt.title('Filtered Physical Stress')
+plt.xlabel('Time (s)')
+plt.ylabel('Voltage (mV)')
+plt.grid(True)
+
+plt.tight_layout()
+plt.show()
 
 # Plot filter's impulse response
 

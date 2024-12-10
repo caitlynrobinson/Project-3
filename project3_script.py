@@ -147,10 +147,13 @@ plt.grid(True)
 
 #%% Part 3: Detect Heartbeats
 
-# Use Project 2 Module to create a template for matching
-template = p3m.load_file('rest.txt', fs)
-template = p2m.normalize_template(template)
+# define time at which template occurs
+lower_time = 10.55 # s
+upper_time = 11.1 # s
 
+# Use Project 2 Module to create a template for matching
+template = p3m.load_file('rest.txt', lower_time, upper_time)
+template = p2m.normalize_template(template)
 # Use Project 2 Module template-matching to detect rest beats
 template_match_rest = p2m.get_template_match(filtered_rest, template)
 beat_samples_rest = p2m.predict_beat_times(template_match_rest, threshold = 0.28)

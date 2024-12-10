@@ -1,12 +1,10 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Project 3: ANS Evaluation
 Authors: Kaelen Kenna & Caitlyn Robinson
 BME 3000
 SCRIPT
 
-DESCRIPTION
+This script calls functions from project3_module and project2_module (authors: Kaelen and Ellie) to load ECG activity data, graph raw data, create a filter and graph filter responses, detect heartbeats, predict heart rate variability, and detect band power. These come together to visualize parasympathetic and sympathetic nervous system activity.
 """
 
 # Import packages
@@ -76,7 +74,6 @@ p3m.plot_raw_data(rest_time, rest, xlim_rest, relax_time, relax, xlim_relax, men
 # Assign variables for cutoffs and sampling frequency
 low_cutoff = 5
 high_cutoff = 70
-fs = 500
 
 # Call the function to apply bandpass filter to datasets
 filtered_rest, filtered_relax, filtered_mental, filtered_physical, freq_response, impulse_response, x_axis = p3m.bandpass_filter(fs, rest, relax, mental_stress, physical_stress, low_cutoff, high_cutoff)
@@ -85,45 +82,45 @@ filtered_rest, filtered_relax, filtered_mental, filtered_physical, freq_response
 plt.figure(figsize=(12, 10))
 
 # Subplot 1: Filtered Rest
-time_rest = np.arange(0, len(filtered_rest)/fs, 1/fs)
+time_rest = np.arange(0, len(filtered_rest)/fs, dt)
 plt.subplot(2, 2, 1)
 plt.plot(time_rest, filtered_rest)
 plt.title('Filtered Rest')
 plt.xlabel('Time (s)')
 plt.ylabel('Voltage (mV)')
-plt.xlim(10,15)
+plt.xlim(xlim_rest)
 plt.grid(True)
 
 # Subplot 2: Filtered and Raw Relax
-time_relax = np.arange(0, len(filtered_relax)/fs, 1/fs)
+time_relax = np.arange(0, len(filtered_relax)/fs, dt)
 plt.subplot(2, 2, 2)
 plt.plot(time_relax, filtered_relax, label='Filtered Relax', color='green')
 plt.plot(time_relax, relax, label='Raw Relax', color='red', alpha=0.5)
 plt.title('Filtered and Raw Relax')  #compare raw and filtered data for relax dataset
 plt.xlabel('Time (s)')
 plt.ylabel('Voltage (mV)')
-plt.xlim(20,25)
+plt.xlim(xlim_relax)
 plt.legend()
 plt.grid(True)
 
 # Subplot 3: Filtered Mental Stress
-time_mental = np.arange(0, len(filtered_mental)/fs, 1/fs)
+time_mental = np.arange(0, len(filtered_mental)/fs, dt)
 plt.subplot(2, 2, 3)
 plt.plot(time_mental, filtered_mental)
 plt.title('Filtered Mental Stress')
 plt.xlabel('Time (s)')
 plt.ylabel('Voltage (mV)')
-plt.xlim(0,5)
+plt.xlim(xlim_mental_stress)
 plt.grid(True)
 
 # Subplot 4: Filtered Physical Stress
-time_physical = np.arange(0, len(filtered_physical)/fs, 1/fs)
+time_physical = np.arange(0, len(filtered_physical)/fs, dt)
 plt.subplot(2, 2, 4)
 plt.plot(time_physical, filtered_physical)
 plt.title('Filtered Physical Stress')
 plt.xlabel('Time (s)')
 plt.ylabel('Voltage (mV)')
-plt.xlim(40,45)
+plt.xlim(xlim_physical_stress)
 plt.grid(True)
 
 plt.tight_layout()
@@ -148,11 +145,10 @@ plt.xlabel('Time (s)')
 plt.ylabel('Frequency (Hz)')
 plt.grid(True)
 
-
 #%% Part 3: Detect Heartbeats
 
 # Use Project 2 Module to create a template for matching
-template = p3m.load_file('rest.txt')
+template = p3m.load_file('rest.txt', fs)
 template = p2m.normalize_template(template)
 
 # Use Project 2 Module template-matching to detect rest beats
@@ -161,6 +157,8 @@ beat_samples_rest = p2m.predict_beat_times(template_match_rest, threshold = 0.28
 beat_times_rest = beat_samples_rest / fs
 filtered_rest_beat = filtered_rest[beat_samples_rest]
 
+heartbeat_times = (145,150)
+
 # Plot rest data with heartbeat times
 plt.figure(6, clear=True)
 plt.plot(time_rest, filtered_rest)
@@ -168,8 +166,9 @@ plt.plot(beat_times_rest, filtered_rest_beat, '.')
 plt.title('Rest data (mV) with heartbeats identified vs. time (s)')
 plt.xlabel('Time (s)')
 plt.ylabel('Voltage (mV)')
-plt.xlim(145,150)
+plt.xlim(heartbeat_times)
 plt.grid(True)
+plt.show()
 
 # Use Project 2 Module template-matching to detect relax beats
 template_match_relax = p2m.get_template_match(filtered_relax, template)
@@ -184,8 +183,9 @@ plt.plot(beat_times_relax, filtered_relax_beat, '.')
 plt.title('Relax data (mV) with heartbeats identified vs. time (s)')
 plt.xlabel('Time (s)')
 plt.ylabel('Voltage (mV)')
-plt.xlim(145,150)
+plt.xlim(heartbeat_times)
 plt.grid(True)
+plt.show()
 
 # Use Project 2 Module template-matching to detect mental stress beats
 template_match_mental = p2m.get_template_match(filtered_mental, template)
@@ -200,8 +200,9 @@ plt.plot(beat_times_mental, filtered_mental_beat, '.')
 plt.title('Mental stress data (mV) with heartbeats identified vs. time (s)')
 plt.xlabel('Time (s)')
 plt.ylabel('Voltage (mV)')
-plt.xlim(145, 150)
+plt.xlim(heartbeat_times)
 plt.grid(True)
+plt.show()
 
 # Use Project 2 Module template-matching to detect physical stress beats
 template_match_physical = p2m.get_template_match(filtered_physical, template)
@@ -216,8 +217,9 @@ plt.plot(beat_times_physical, filtered_physical_beat, '.')
 plt.title('Physical stress data (mV) with heartbeats identified vs. time (s)')
 plt.xlabel('Time (s)')
 plt.ylabel('Voltage (mV)')
-plt.xlim(145,150)
+plt.xlim(heartbeat_times)
 plt.grid(True)
+plt.show()
 
 #%% Part 4: Calculate Heart Rate Variability (HRV)
 
@@ -248,102 +250,106 @@ plt.title('HRV (ms) as a function of activity type')
 plt.xlabel('Activity type')
 plt.ylabel('HRV (ms)')
 plt.grid(True)
+plt.show()
 
 # Calculate an interpolated timecourse of each IBI datasetat regular intervals of dt = 0.1 seconds
-dt= 0.1
+dt = 0.1 #declare dt for this function
 interpolated_rest_data = p3m.interpolate_data(beat_times_rest, ibi_rest_data, dt)
 interpolated_relax_data = p3m.interpolate_data(beat_times_relax, ibi_relax_data, dt)
 interpolated_mental_data = p3m.interpolate_data(beat_times_mental, ibi_mental_data, dt)
 interpolated_physical_data = p3m.interpolate_data(beat_times_physical, ibi_physical_data, dt)
 
-
 #%% Part 5: Get HRV Frequency Band Power
 
 # Calculate frequency domain magnitude and power of each activity's IBI timecourse signal
-dt = 0.1
 rest_freq_power, rest_freq_domain = p3m.get_freq_power(interpolated_rest_data, dt)
 relax_freq_power, relax_freq_domain = p3m.get_freq_power(interpolated_relax_data, dt)
 mental_freq_power, mental_freq_domain = p3m.get_freq_power(interpolated_mental_data, dt)
 physical_freq_power, physical_freq_domain = p3m.get_freq_power(interpolated_physical_data, dt)
-
-# plot lf/hf bands in frequency vs. power of rest IBI
+# Plot lf/hf bands in frequency vs. power of rest IBI
 plt.figure(11, clear=True)
 plt.plot(rest_freq_domain, rest_freq_power)
 plt.title('Frequency (Hz) vs. Power (s^2) of Rest IBI')
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Power (s^2)')
-# fill in low frequency/parasympathetic section of graph
-x_low_rest = rest_freq_domain[(rest_freq_domain > 0.04) & (rest_freq_domain < 0.15)]
-y_low_rest = rest_freq_power[(rest_freq_domain > 0.04) & (rest_freq_domain < 0.15)]
-plt.fill_between(x_low_rest, y_low_rest, 0, color='b')
-# fill in high frequency/sympathetic section of graph
-x_high_rest = rest_freq_domain[(rest_freq_domain > 0.15) & (rest_freq_domain < 0.4)]
-y_high_rest = rest_freq_power[(rest_freq_domain > 0.15) & (rest_freq_domain < 0.4)]
-plt.fill_between(x_high_rest, y_high_rest, 0, color='r')
-plt.xlim(0.04,0.4)
 
-# plot lf/hf bands in frequency vs. power of relaxed IBI
+# Declare variables for accepted parasympathetic and sympathetic power bands
+parasympathetic_low = 0.04
+parasympathetic_high = 0.15
+sympathetic_low = 0.15
+sympathetic_high = 0.4
+
+# Fill in low frequency/parasympathetic section of graph
+x_low_rest = rest_freq_domain[(rest_freq_domain > parasympathetic_low) & (rest_freq_domain < parasympathetic_high)]
+y_low_rest = rest_freq_power[(rest_freq_domain > parasympathetic_low) & (rest_freq_domain < parasympathetic_high)]
+plt.fill_between(x_low_rest, y_low_rest, 0, color='b')
+# Fill in high frequency/sympathetic section of graph
+x_high_rest = rest_freq_domain[(rest_freq_domain > sympathetic_low) & (rest_freq_domain < sympathetic_high)]
+y_high_rest = rest_freq_power[(rest_freq_domain > sympathetic_low) & (rest_freq_domain < sympathetic_high)]
+plt.fill_between(x_high_rest, y_high_rest, 0, color='r')
+plt.xlim(parasympathetic_low, sympathetic_high)
+
+# Plot lf/hf bands in frequency vs. power of relaxed IBI
 plt.figure(12, clear=True)
 plt.plot(relax_freq_domain, relax_freq_power)
 plt.title('Frequency (Hz) vs. Power (s^2) of Relax IBI')
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Power (s^2)')
-# fill in low frequency/parasympathetic section of graph
-x_low_relax = relax_freq_domain[(relax_freq_domain > 0.04) & (relax_freq_domain < 0.15)]
-y_low_relax = relax_freq_power[(relax_freq_domain > 0.04) & (relax_freq_domain < 0.15)]
+# Fill in low frequency/parasympathetic section of graph
+x_low_relax = relax_freq_domain[(relax_freq_domain > parasympathetic_low) & (relax_freq_domain < parasympathetic_high)]
+y_low_relax = relax_freq_power[(relax_freq_domain > parasympathetic_low) & (relax_freq_domain < parasympathetic_high)]
 plt.fill_between(x_low_relax, y_low_relax, 0, color='b')
-# fill in high frequency/sympathetic section of graph
-x_high_relax = relax_freq_domain[(relax_freq_domain > 0.15) & (relax_freq_domain < 0.4)]
-y_high_relax = relax_freq_power[(relax_freq_domain > 0.15) & (relax_freq_domain < 0.4)]
+# Fill in high frequency/sympathetic section of graph
+x_high_relax = relax_freq_domain[(relax_freq_domain > sympathetic_low) & (relax_freq_domain < sympathetic_high)]
+y_high_relax = relax_freq_power[(relax_freq_domain > sympathetic_low) & (relax_freq_domain < sympathetic_high)]
 plt.fill_between(x_high_relax, y_high_relax, 0, color='r')
-plt.xlim(0.04,0.4)
+plt.xlim(parasympathetic_low, sympathetic_high)
 
-# plot lf/hf bands in frequency vs. power of mental stress IBI
+# Plot lf/hf bands in frequency vs. power of mental stress IBI
 plt.figure(13, clear=True)
 plt.plot(mental_freq_domain, mental_freq_power)
 plt.title('Frequency (Hz) vs. Power (s^2) of Mental IBI')
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Power (s^2)')
-# fill in low frequency/parasympathetic section of graph
-x_low_mental = mental_freq_domain[(mental_freq_domain > 0.04) & (mental_freq_domain < 0.15)]
-y_low_mental = mental_freq_power[(mental_freq_domain > 0.04) & (mental_freq_domain < 0.15)]
+# Fill in low frequency/parasympathetic section of graph
+x_low_mental = mental_freq_domain[(mental_freq_domain > parasympathetic_low) & (mental_freq_domain < parasympathetic_high)]
+y_low_mental = mental_freq_power[(mental_freq_domain > parasympathetic_low) & (mental_freq_domain < parasympathetic_high)]
 plt.fill_between(x_low_mental, y_low_mental, 0, color='b')
-# fill in high frequency/sympathetic section of graph
-x_high_mental = mental_freq_domain[(mental_freq_domain > 0.15) & (mental_freq_domain < 0.4)]
-y_high_mental = mental_freq_power[(mental_freq_domain > 0.15) & (mental_freq_domain < 0.4)]
+# Fill in high frequency/sympathetic section of graph
+x_high_mental = mental_freq_domain[(mental_freq_domain > sympathetic_low) & (mental_freq_domain < sympathetic_high)]
+y_high_mental = mental_freq_power[(mental_freq_domain > sympathetic_low) & (mental_freq_domain < sympathetic_high)]
 plt.fill_between(x_high_mental, y_high_mental, 0, color='r')
-plt.xlim(0.04,0.4)
+plt.xlim(parasympathetic_low, sympathetic_high)
 
-# plot lf/hf bands in frequency vs. power of physical stress IBI
+# Plot lf/hf bands in frequency vs. power of physical stress IBI
 plt.figure(14, clear=True)
 plt.plot(physical_freq_domain, physical_freq_power)
 plt.title('Frequency (Hz) vs. Power (s^2) of Physical IBI')
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Power (s^2)')
-# fill in low frequency/parasympathetic section of graph
-x_low_physical = physical_freq_domain[(physical_freq_domain > 0.04) & (physical_freq_domain < 0.15)]
-y_low_physical = physical_freq_power[(physical_freq_domain > 0.04) & (physical_freq_domain < 0.15)]
+# Fill in low frequency/parasympathetic section of graph
+x_low_physical = physical_freq_domain[(physical_freq_domain > parasympathetic_low) & (physical_freq_domain < parasympathetic_high)]
+y_low_physical = physical_freq_power[(physical_freq_domain > parasympathetic_low) & (physical_freq_domain < parasympathetic_high)]
 plt.fill_between(x_low_physical, y_low_physical, 0, color='b')
-# fill in high frequency/sympathetic section of graph
-x_high_physical = physical_freq_domain[(physical_freq_domain > 0.15) & (physical_freq_domain < 0.4)]
-y_high_physical = physical_freq_power[(physical_freq_domain > 0.15) & (physical_freq_domain < 0.4)]
+# Fill in high frequency/sympathetic section of graph
+x_high_physical = physical_freq_domain[(physical_freq_domain > sympathetic_low) & (physical_freq_domain < sympathetic_high)]
+y_high_physical = physical_freq_power[(physical_freq_domain > sympathetic_low) & (physical_freq_domain < sympathetic_high)]
 plt.fill_between(x_high_physical, y_high_physical, 0, color='r')
-plt.xlim(0.04,0.4)
+plt.xlim(parasympathetic_low, sympathetic_high)
 
-# calculate power ratios of LF/HF
-rest_power_ratio = p3m.get_power_ratio(rest_freq_domain, rest_freq_power)
-relax_power_ratio = p3m.get_power_ratio(relax_freq_domain, relax_freq_power)
-mental_power_ratio = p3m.get_power_ratio(mental_freq_power, mental_freq_power)
-physical_power_ratio = p3m.get_power_ratio(physical_freq_domain, physical_freq_power)
+# Calculate power ratios of LF/HF
+rest_power_ratio = p3m.get_power_ratio(rest_freq_domain, rest_freq_power, parasympathetic_low, parasympathetic_high, sympathetic_low, sympathetic_high)
+relax_power_ratio = p3m.get_power_ratio(relax_freq_domain, relax_freq_power, parasympathetic_low, parasympathetic_high, sympathetic_low, sympathetic_high)
+mental_power_ratio = p3m.get_power_ratio(mental_freq_power, mental_freq_power, parasympathetic_low, parasympathetic_high, sympathetic_low, sympathetic_high)
+physical_power_ratio = p3m.get_power_ratio(physical_freq_domain, physical_freq_power, parasympathetic_low, parasympathetic_high, sympathetic_low, sympathetic_high)
 
-# make bar plot of power ratios
+# Make bar plot of power ratios
 ratio_labels = ['Rest', 'Relax', 'Mental Stress', 'Physical Stress']
 ratio_values = [rest_power_ratio, relax_power_ratio, mental_power_ratio, physical_power_ratio]
-
 plt.figure(15, clear=True)
 plt.bar(ratio_labels, ratio_values, color = ['blue', 'yellow', 'green', 'orange'])
-plt.title('Power ratios as a function of activity type')
+plt.title('Power ratios as a function of activity type') #annotate figure
 plt.xlabel('Activity type')
 plt.ylabel('Power ratio')
 plt.grid(True)
-
+plt.show()

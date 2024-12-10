@@ -336,3 +336,14 @@ relax_power_ratio = p3m.get_power_ratio(relax_freq_domain, relax_freq_power)
 mental_power_ratio = p3m.get_power_ratio(mental_freq_power, mental_freq_power)
 physical_power_ratio = p3m.get_power_ratio(physical_freq_domain, physical_freq_power)
 
+# make bar plot of power ratios
+ratio_labels = ['Rest', 'Relax', 'Mental Stress', 'Physical Stress']
+ratio_values = [rest_power_ratio, relax_power_ratio, mental_power_ratio, physical_power_ratio]
+
+plt.figure(15, clear=True)
+plt.bar(ratio_labels, ratio_values, color = ['blue', 'yellow', 'green', 'orange'])
+plt.title('Power ratios as a function of activity type')
+plt.xlabel('Activity type')
+plt.ylabel('Power ratio')
+plt.grid(True)
+

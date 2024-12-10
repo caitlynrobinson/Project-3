@@ -50,7 +50,7 @@ def plot_raw_data(rest_time, rest, xlim_rest, relax_time, relax, xlim_relax, men
     -------
     None.
     """
-
+    # plot raw rest data on new figure and subplot
     fig, axes = plt.subplots(2, 2, figsize=(10,6)) #set up full figure
     axes[0,0].plot(rest_time, rest, color='blue') #assign rest subplot
     axes[0, 0].set_title('Rest') #annotate subplot
@@ -59,6 +59,7 @@ def plot_raw_data(rest_time, rest, xlim_rest, relax_time, relax, xlim_relax, men
     axes[0, 0].set_xlim(xlim_rest) #set x-limits for subplot
     axes[0, 0].grid(True)
     
+    # plot raw relaxed data
     axes[0,1].plot(relax_time, relax, color='red') #assign relaxed subplot
     axes[0, 1].set_title('Relaxed') #annotate subplot
     axes[0, 1].set_xlabel('Time (s)')
@@ -66,6 +67,7 @@ def plot_raw_data(rest_time, rest, xlim_rest, relax_time, relax, xlim_relax, men
     axes[0, 1].set_xlim(xlim_relax) #set x-limits for subplot
     axes[0, 1].grid(True)
     
+    # plot raw mental stress data
     axes[1,0].plot(mental_stress_time, mental_stress, color='orange') #assign third subplot
     axes[1, 0].set_title('Mental Stress') #annotate subplot
     axes[1, 0].set_xlabel('Time (s)')
@@ -73,6 +75,7 @@ def plot_raw_data(rest_time, rest, xlim_rest, relax_time, relax, xlim_relax, men
     axes[1, 0].set_xlim(xlim_mental_stress) #set x-limits for subplot
     axes[1, 0].grid(True)
     
+    # plot raw physical stress data
     axes[1,1].plot(physical_stress_time, physical_stress, color='green') #assign fourth subplot
     axes[1, 1].set_title('Physical Stress') #annotate subplot
     axes[1, 1].set_xlabel('Time (s)')
@@ -167,18 +170,133 @@ def bandpass_filter(fs, rest, relax, mental_stress, physical_stress, low_cutoff,
     
 #%% Part 3: Detect Heartbeats
 def load_file (input_file):
+    """
+    
+
+    Parameters
+    ----------
+    input_file : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    template : TYPE
+        DESCRIPTION.
+
+    """
     data = np.loadtxt(input_file)
     time = np.arange(0, len(data)/500, 1/500)
     voltage = data
+    
+    # create boolean mask to define template
     boolean_mask = (time > 10.55) & (time < 11.1)
     template = voltage[boolean_mask]
     return template
 
 #%% Part 4: Calculate Heart Rate Variability
 def calculate_hrv (ibi_data_series):
+    """
+    
+
+    Parameters
+    ----------
+    ibi_data_series : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    hrv : TYPE
+        DESCRIPTION.
+
+    """
+    # sdnn calculations for hrv
     rr_deviations = ibi_data_series - np.mean(ibi_data_series)
     rr_variance = np.mean(rr_deviations ** 2)
     hrv = np.sqrt(rr_variance)
     return hrv
 
+def interpolate_data (beat_times, ibi_data, dt):
+    """
+    
+
+    Parameters
+    ----------
+    beat_times : TYPE
+        DESCRIPTION.
+    ibi_data : TYPE
+        DESCRIPTION.
+    dt : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    interpolated_data : TYPE
+        DESCRIPTION.
+
+    """
+    # create new time array for interpolated values
+    new_time_array = np.arange(0, beat_times[-1], dt)
+    
+    # interpolate ibi values
+    interpolated_data = np.interp(new_time_array, beat_times[1:], ibi_data)
+    return interpolated_data
+
 #%% Part 5: Get HRV Frequency Band Power
+def get_freq_power (interpolated_data, dt):
+    """
+    
+
+    Parameters
+    ----------
+    interpolated_data : TYPE
+        DESCRIPTION.
+    dt : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    freq_power : TYPE
+        DESCRIPTION.
+    freq_domain : TYPE
+        DESCRIPTION.
+
+    """
+    # normalize interpolated data by subtracting mean
+    mean_interp_data = interpolated_data - np.mean(interpolated_data)
+    
+    # calculate x and y values for freqeuency vs. power graphs
+    freq_amplitude = np.fft.rfft(mean_interp_data)
+    freq_domain = np.fft.rfftfreq(len(interpolated_data), dt) # x values
+    freq_power = (np.abs(freq_amplitude)) ** 2 # y values
+    return freq_power, freq_domain
+
+def get_power_ratio (freq_domain, freq_power):
+    """
+    
+
+    Parameters
+    ----------
+    freq_domain : TYPE
+        DESCRIPTION.
+    freq_power : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    power_ratio : TYPE
+        DESCRIPTION.
+
+    """
+    # make low and high frequency boolean masks to separate ANS activity
+    low_freq_mask = (freq_domain > 0.04) & (freq_domain < 0.15)
+    high_freq_mask = (freq_domain > 0.15) & (freq_domain < 0.4)
+    
+    # calculate mean low and high power
+    low_freq_power = freq_power[low_freq_mask]
+    high_freq_power = freq_power[high_freq_mask]
+    mean_low_power = np.mean(low_freq_power)
+    mean_high_power = np.mean(high_freq_power)
+    
+    # calculate power ratio lf/hf
+    power_ratio = mean_low_power / mean_high_power
+    return power_ratio

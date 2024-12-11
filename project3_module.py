@@ -181,7 +181,7 @@ def bandpass_filter(fs, rest, relax, mental_stress, physical_stress, low_cutoff,
 
 #%% Part 3: Detect Heartbeats
 
-def load_file (input_file, fs):
+def load_file (input_file, lower_time, upper_time):
     """
     This function loads the selected input file to be used in a module imported from Project 2.
 
@@ -201,7 +201,7 @@ def load_file (input_file, fs):
     voltage = data
     
     # Create a Boolean mask to define template
-    boolean_mask = (time > 10.55) & (time < 11.1)
+     boolean_mask = (time > lower_time) & (time < upper_time)
     template = voltage[boolean_mask]
     return template
 

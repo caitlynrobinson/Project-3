@@ -181,7 +181,7 @@ def bandpass_filter(fs, rest, relax, mental_stress, physical_stress, low_cutoff,
 
 #%% Part 3: Detect Heartbeats
 
-def load_file (input_file, lower_time, upper_time):
+def load_file (input_file, fs, lower_time, upper_time):
     """
     This function loads the selected input file to be used in a module imported from Project 2.
 
